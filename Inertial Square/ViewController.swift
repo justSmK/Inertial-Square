@@ -15,7 +15,14 @@ class ViewController: UIViewController {
         view.center = self.view.center
         view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = .link
-        view.layer.cornerRadius = 10
+        view.layer.cornerRadius = 30
+        let image = UIImage(named: "photo_1")
+        let imageView = UIImageView(image: image)
+        imageView.frame.size = view.frame.size
+        imageView.layer.cornerRadius = 30
+//        imageView.layer.maskedCorners = CACornerMask(rawValue: 30)
+        imageView.clipsToBounds = true
+        view.addSubview(imageView)
         return view
     }()
     
