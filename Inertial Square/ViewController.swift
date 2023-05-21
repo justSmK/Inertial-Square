@@ -9,41 +9,40 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    private lazy var squareView: UIView = {
-        let view = UIView()
-        view.frame.size = CGSize(width: 128, height: 128)
-        view.center = self.view.center
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .link
-        view.layer.cornerRadius = 30
-        let image = UIImage(named: "photo_1")
-        let imageView = UIImageView(image: image)
-        imageView.frame.size = view.frame.size
-        imageView.layer.cornerRadius = 30
-//        imageView.layer.maskedCorners = CACornerMask(rawValue: 30)
-        imageView.clipsToBounds = true
-        view.addSubview(imageView)
-        return view
-    }()
-    
-    lazy var animator = UIDynamicAnimator(referenceView: view)
-    lazy var snapBehavior = UISnapBehavior(item: squareView, snapTo: squareView.center)
+    let squareView = UIView()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         
         view.addSubview(squareView)
+        squareView.backgroundColor = .systemBlue
+        squareView.layer.cornerCurve = .continuous
+        squareView.layer.cornerRadius = 8
+        squareView.frame = .init(x: 0, y: 0, width: 100, height: 100)
+        squareView.center = .init(x: view.frame.width / 2, y: view.frame.height / 2)
         
-        let moveView = UITapGestureRecognizer(target: self, action: #selector(moveViewTapped))
-        view.addGestureRecognizer(moveView)
-        snapBehavior.damping = 1
-        animator.addBehavior(snapBehavior)
+        animator = UIDynamicAnimator(referenceView: view)
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(sender:)))
+        view.addGestureRecognizer(tapGesture)
     }
 
-    @objc private func moveViewTapped(_ recognizer: UITapGestureRecognizer) {
-        snapBehavior.snapPoint = recognizer.location(in: view)
+    private var animator: UIDynamicAnimator?
+    private var snapBehavior: UISnapBehavior?
+    
+    @objc func handleTap(sender: UITapGestureRecognizer) {
+        let tapPoint = sender.location(in: view)
+        
+        if let snapBehavior = self.snapBehavior {
+            animator?.removeBehavior(snapBehavior)
+        }
+        
+        let snapBehavior = UISnapBehavior(item: squareView, snapTo: tapPoint)
+        snapBehavior.damping = 0.9
+        animator?.addBehavior(snapBehavior)
+        
+        self.snapBehavior = snapBehavior
     }
-
 }
 
